@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+#app.py
+from flask import Flask, jsonify , request
 import sqlite3
 
 app = Flask(__name__)
@@ -61,5 +62,58 @@ def get_shoes():
     conn.close()
     return jsonify(data)
 
+
+#post api to get the data
+
+@app.route('/addshoe',methods=['POST'])
+def add_shoe():
+
+    #Parse the json data
+    data = request.get_json()
+
+    #Extract data from jason
+    nike_data = data.get('nike')
+    adidas_data = data.get('adidas')
+    shoes_list_data = data.get('shoes_list')
+
+    #connect to the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Insert into nike table
+        if nike_data:
+            cursor.execute(
+                "INSERT INTO nike(nike_id, model, size, color, type, price) VALUES(?,?,?,?,?,?)",
+                (nike_data['nike_id'], nike_data['model'], nike_data['size'], nike_data['color'], nike_data['type'], nike_data['price'])
+            )
+        
+        # Insert into adidas table
+        if adidas_data:
+            cursor.execute(
+                "INSERT INTO adidas(adidas_id, model, size, color, type, price) VALUES(?,?,?,?,?,?)",
+                (adidas_data['adidas_id'], adidas_data['model'], adidas_data['size'], adidas_data['color'], adidas_data['type'], adidas_data['price'])
+            )
+        
+        # Insert into shoes_list table
+        if shoes_list_data:
+            cursor.execute(
+                "INSERT INTO shoes_list(shoes_id, shoe_name, adidas_id, nike_id) VALUES(?,?,?,?)",
+                (shoes_list_data['shoes_id'], shoes_list_data['shoe_name'], shoes_list_data['adidas_id'], shoes_list_data['nike_id'])
+            )
+
+        conn.commit()
+        response = {"message":"Data inserted successfully"}
+
+    except sqlite3.Error as e:
+        #Rollback if there's an error and return error message
+        conn.rollback()
+        response = {"error":str(e)}
+        
+    return jsonify(response)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='127.0.1.1',port=8000)
+
+
