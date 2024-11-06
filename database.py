@@ -5,7 +5,7 @@ def create_database():
 
     conn = sqlite3.connect('shoes.db') # if shoes.db does not exist it will create it
     cursor = conn.cursor() # it will point to the specific database
-
+    #random comment
     #create table or schema
     
     cursor.execute('''

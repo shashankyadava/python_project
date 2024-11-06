@@ -25,6 +25,7 @@ class Server:
         cursor = conn.cursor()
 
         # SQL query to join shoes_list_table with adidas and nike
+        #random comment
         query = ''' SELECT * from shoes '''
 
         cursor.execute(query)

@@ -5,6 +5,7 @@ from server import Server
 # TODO: This method will be moved to a new startup file
 def startup():
     # Connect to the database
+    #random comment
     create_database()
     insert_data()
 
