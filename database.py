@@ -7,37 +7,18 @@ def create_database():
     cursor = conn.cursor() # it will point to the specific database
 
     #create table or schema
+    
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS nike (
-            nike_id INTEGER PRIMARY KEY,
-            model TEXT NOT NULL,
-            size INTEGER,
-            color TEXT,
-            type TEXT,
-            price REAL
-        )
-    ''')
-
-    #create second table or schema
-    cursor.execute(''' 
-        CREATE TABLE IF NOT EXISTS adidas (
-            adidas_id INTEGER PRIMARY KEY,
-            model TEXT NOT NULL,
-            size INTEGER,
-            color TEXT,
-            type TEXT,
-            price REAL
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS shoes_list (
+        CREATE TABLE IF NOT EXISTS shoes (
             shoes_id INTEGER PRIMARY KEY,
+            brand TEXT NOT NULL,
             shoe_name TEXT NOT NULL,
-            adidas_id INTEGER,
-            nike_id INTEGER,
-            FOREIGN KEY (adidas_id) REFERENCES adidas(adidas_id),
-            FOREIGN KEY (nike_id) REFERENCES nike(nike_id)   
+            shape TEXT NOT NULL,
+            size INT NOT NULL,
+            menwear TEXT NOT NULL,
+            womanwear TEX NOT NULL,
+            price INT NOT NULL,
+            manufacturer TEXT NOT NULL      
         )
     ''')
 
@@ -52,15 +33,22 @@ def insert_data():
     conn = sqlite3.connect('shoes.db')
     cursor = conn.cursor()
 
-    #insert data into the nike table
-    cursor.execute("INSERT INTO nike(nike_id,model,size,color,type,price) VALUES(?,?,?,?,?,?)", (1,'jordan',9,'black','men',1000.00))
-    #insert data into the adidas table
-    cursor.execute("INSERT INTO adidas(adidas_id,model,size,color,type,price) VALUES(?,?,?,?,?,?)", (1,'sambas',9,'black','men',1000.00))
+    
+    #insert data into shoes table
+    cursor.execute("INSERT INTO shoes(shoes_id,brand,shoe_name,shape,size,menwear,womanwear,price,manufacturer) VALUES(?,?,?,?,?,?,?,?,?)", (1,'nike','jordan','normal','9','Men','No','8000','nike_india'))
+    
 
-    #insert data into shoes_list_table
-    cursor.execute("INSERT INTO shoes_list(shoes_id,shoe_name,adidas_id,nike_id) VALUES(?,?,?,?)", (1,'jordan',None,1))
-    cursor.execute("INSERT INTO shoes_list(shoes_id,shoe_name,adidas_id,nike_id) VALUES(?,?,?,?)", (2,'sambas',1,None))
+    #wrote to check the if the data is getting inserted or not
+    # query = ''' SELECT * from shoes '''
+
+    # cursor.execute(query)
+    # rows = cursor.fetchall()
+    # print(rows)
 
     conn.commit()
     conn.close()
+
+# if __name__ == '__main__':
+#     create_database
+
 
