@@ -5,7 +5,9 @@ from server import Server
 # TODO: This method will be moved to a new startup file
 def startup():
     # Connect to the database
+    #random comment
     create_database()
+    insert_data()
 
     # insert some dummy data
     # TODO: This will be removed in future after the support of POST API becomes stable.
