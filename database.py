@@ -1,9 +1,15 @@
 import sqlite3
+from flask import jsonify
+
+def __get_db_connection():
+    conn = sqlite3.connect('shoes.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def create_database():
     #connect to the database
 
-    conn = sqlite3.connect('shoes.db') # if shoes.db does not exist it will create it
+    conn = __get_db_connection() # get the connection to the database 
     cursor = conn.cursor() # it will point to the specific database
     #random comment
     #create table or schema
@@ -26,29 +32,55 @@ def create_database():
 
     #close the connection
     conn.close()
+def fetch_data(query):
+    try:
+        conn = __get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = [description[0] for description in cursor.description]
+        print(columns)
+    except sqlite3.Error as e:
+        print("Error found: {e}")
+        return e
     
-def insert_data():
-
-    #connect to the database
-    conn = sqlite3.connect('shoes.db')
-    cursor = conn.cursor()
+    #convert the rows to a list of dictionaries
+    try:
+        data = [dict(zip(columns, row)) for row in rows]
+        print(data)
+        return jsonify(data)
+    except sqlite3.Error as e:
+        print("Error as:{e}")
+        return e
+    
+    finally:
+        conn.close()
+        
+            
+            
 
     
-    #insert data into shoes table
-    cursor.execute("INSERT INTO shoes(shoes_id,brand,shoe_name,shape,size,menwear,womanwear,price,manufacturer) VALUES(?,?,?,?,?,?,?,?,?)", (1,'nike','jordan','normal','9','Men','No','8000','nike_india'))
-    
+def insert_data(data):
 
-    #wrote to check the if the data is getting inserted or not
-    # query = ''' SELECT * from shoes '''
-
-    # cursor.execute(query)
-    # rows = cursor.fetchall()
-    # print(rows)
-
-    conn.commit()
-    conn.close()
-
-# if __name__ == '__main__':
-#     create_database
-
-
+    for shoeinfo, shoevalue in data.items():
+        if not shoevalue:
+            #print(shoevalue)
+            return jsonify({"error":shoeinfo+" "+"is required"})
+        # checklist[shoeinfo] = shoevalue
+        
+        query = "INSERT INTO shoes ({columns}) VALUES ({value_placeholders})".format(
+            columns = ", ".join(data.keys()),
+            value_placeholders = ", ".join(["?"]*len(data))
+        )
+        # cursor.execute("INSERT INTO shoes(brand,shoe_name,shape,size,menwear,womanwear,price,manufacturer) VALUES(?,?,?,?,?,?,?,?)", (brand,shoe_name,shape,size,menwear,womanwear,price,manufacturer))
+        try:
+            conn = __get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute(query,list(data.values()))
+            conn.commit()
+            return jsonify({"message":"shoe added successfully"})
+        except sqlite3.Error as e:
+            print("Error occured: {e}")
+        finally:
+            conn.close()
+            print("Connection closed")
