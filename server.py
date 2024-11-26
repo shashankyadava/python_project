@@ -13,7 +13,7 @@ class Server:
 
     def add_routes(self):
         self.__server.add_url_rule('/shoes', '/shoes', self.get_shoes, methods=['GET'])
-        self.__server.add_url_rule('/post_shoes', '/post_shoes', self.post_shoes, methods=['POST'])
+        self.__server.add_url_rule('/create_shoes', '/create_shoes', self.create_shoes, methods=['POST'])
 
     # @staticmethod
     # def __get_db_connection():
@@ -25,7 +25,7 @@ class Server:
         query = ''' SELECT * from shoes '''
         return database.fetch_data(query)
     
-    def post_shoes(self):
+    def create_shoes(self):
         
         #     cursor.execute('''
         #     CREATE TABLE IF NOT EXISTS shoes (
