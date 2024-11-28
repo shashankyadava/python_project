@@ -22,8 +22,19 @@ class Server:
     #     return conn
     
     def get_shoes(self):
-        query = ''' SELECT * from shoes '''
-        return database.fetch_data(query)
+        try:
+            shoe_id = request.args.get('shoe_id')
+            if shoe_id:
+                query = ''' SELECT * from shoes where shoes_id = ?'''
+                params = (shoe_id,)
+            else:
+                query = ''' SELECT * from shoes '''
+                params = None
+        except sqlite3.Error as e:
+            print(e)
+            return e
+
+        return database.fetch_data(query,params)
     
     def create_shoes(self):
         
@@ -46,6 +57,8 @@ class Server:
             return e
         
         return database.insert_data(data)
+    
+    
 
         
         
