@@ -32,13 +32,19 @@ def create_database():
 
     #close the connection
     conn.close()
-def fetch_data(query):
+def fetch_data(query, params=None):
     try:
         conn = __get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(query)
+        if params:
+            cursor.execute(query,params)
+        else:
+            cursor.execute(query)
+        # print(cursor)
         rows = cursor.fetchall()
+        # print(rows)
         columns = [description[0] for description in cursor.description]
+        # columns = 0
         print(columns)
     except sqlite3.Error as e:
         print("Error found: {e}")
@@ -47,19 +53,17 @@ def fetch_data(query):
     #convert the rows to a list of dictionaries
     try:
         data = [dict(zip(columns, row)) for row in rows]
-        print(data)
+       # print(data)
         return jsonify(data)
     except sqlite3.Error as e:
-        print("Error as:{e}")
+        print(e)
         return e
     
     finally:
         conn.close()
-        
-            
-            
 
-    
+    #return columns
+         
 def insert_data(data):
 
     for shoeinfo, shoevalue in data.items():
