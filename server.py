@@ -14,6 +14,7 @@ class Server:
     def add_routes(self):
         self.__server.add_url_rule('/shoes', '/shoes', self.get_shoes, methods=['GET'])
         self.__server.add_url_rule('/create_shoes', '/create_shoes', self.create_shoes, methods=['POST'])
+        self.__server.add_url_rule('/remove_shoe', '/remove_shoe', self.remove_shoe, methods=['GET'])
 
     # @staticmethod
     # def __get_db_connection():
@@ -57,6 +58,23 @@ class Server:
             return e
         
         return database.insert_data(data)
+
+
+    def remove_shoe(self):
+        try:
+            shoe_id = request.args.get('shoe_id')
+            print(shoe_id)
+
+            query = ''' DELETE from shoes where shoes_id = ? '''
+            params = (shoe_id,)
+        except sqlite3.Error as e:
+            print(e)
+            return e
+        return database.remove_data(query,params)
+
+
+
+
     
     
 

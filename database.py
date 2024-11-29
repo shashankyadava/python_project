@@ -88,3 +88,28 @@ def insert_data(data):
         finally:
             conn.close()
             print("Connection closed")
+
+
+def remove_data(query,params=None):
+    #need to check if id exist in the database or not
+    #if not then we have to manage it
+    #if it exists then , we have working code to tackle it
+    try:
+        conn = __get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM shoes WHERE shoes_id = ?",params)
+        result = cursor.fetchone()
+        
+        if result:
+            cursor.execute(query,params)
+            conn.commit()
+            return jsonify({"message":"shoe deleted successfully"})
+        else:
+            return jsonify({"message":"shoe not found"})
+
+    except sqlite3.Error as e:
+        print("Erro occured:",{e})
+        return e
+    finally:
+        conn.close()
+        print("Connection closed")
