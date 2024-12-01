@@ -14,7 +14,7 @@ class Server:
     def add_routes(self):
         self.__server.add_url_rule('/shoes', '/shoes', self.get_shoes, methods=['GET'])
         self.__server.add_url_rule('/create_shoes', '/create_shoes', self.create_shoes, methods=['POST'])
-        self.__server.add_url_rule('/remove_shoe', '/remove_shoe', self.remove_shoe, methods=['GET'])
+        self.__server.add_url_rule('/remove_shoe', '/remove_shoe', self.remove_shoe, methods=['GET','DELETE'])
 
     # @staticmethod
     # def __get_db_connection():
