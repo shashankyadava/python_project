@@ -25,12 +25,20 @@ class Server:
     def get_shoes(self):
         try:
             shoe_id = request.args.get('shoe_id')
-            if shoe_id:
-                query = ''' SELECT * from shoes where shoes_id = ?'''
-                params = (shoe_id,)
+            shoe_name = request.args.get('shoe_name')
+            if shoe_id and shoe_name:
+                query = ''' SELECT * from shoes where shoes_id = ? AND shoe_name = ?'''
+                params = (shoe_id,shoe_name,)
+            elif shoe_id:
+                query = ''' SELECT * from shoes where shoes_id = ? '''
+                params = (shoe_id)
+            elif shoe_name:
+                query = ''' SELECT * from shoes where shoe_name = ?'''
+                params = (shoe_name,)
             else:
                 query = ''' SELECT * from shoes '''
                 params = None
+
         except sqlite3.Error as e:
             print(e)
             return e
