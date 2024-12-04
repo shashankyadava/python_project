@@ -65,12 +65,13 @@ def fetch_data(query, params=None):
     #return columns
          
 def insert_data(data):
-
+    #data = jsonify(data)
     for shoeinfo, shoevalue in data.items():
         if not shoevalue:
-            #print(shoevalue)
+            
             return jsonify({"error":shoeinfo+" "+"is required"})
         # checklist[shoeinfo] = shoevalue
+        print(shoevalue)
         
         query = "INSERT INTO shoes ({columns}) VALUES ({value_placeholders})".format(
             columns = ", ".join(data.keys()),
@@ -84,7 +85,8 @@ def insert_data(data):
             conn.commit()
             return jsonify({"message":"shoe added successfully"})
         except sqlite3.Error as e:
-            print("Error occured: {e}")
+            print(e)
+            return e
         finally:
             conn.close()
             print("Connection closed")
@@ -113,3 +115,35 @@ def remove_data(query,params=None):
     finally:
         conn.close()
         print("Connection closed")
+
+
+
+
+
+
+def update_shoe(query,params=None):
+    
+    try:
+        # Connect to the database
+        conn = __get_db_connection()
+        cursor = conn.cursor()
+
+        # Execute the query
+        cursor.execute(query, params)
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'shoe not found or no changes made'}), 404
+
+        return jsonify({'message': 'shoe updated successfully'}), 200
+
+    except sqlite3.Error as e:
+        return jsonify({'error': f"Database error: {e}"}), 500
+
+    finally:
+        # Close the database connection
+        conn.close()
+
+
+
+    

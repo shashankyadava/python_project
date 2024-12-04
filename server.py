@@ -14,7 +14,8 @@ class Server:
     def add_routes(self):
         self.__server.add_url_rule('/shoes', '/shoes', self.get_shoes, methods=['GET'])
         self.__server.add_url_rule('/create_shoes', '/create_shoes', self.create_shoes, methods=['POST'])
-        self.__server.add_url_rule('/remove_shoe', '/remove_shoe', self.remove_shoe, methods=['GET','DELETE'])
+        self.__server.add_url_rule('/remove_shoe', '/remove_shoe', self.remove_shoe, methods=['DELETE'])
+        self.__server.add_url_rule('/update_shoe', '/update_shoe', self.update_shoe, methods=['PATCH'])
 
     # @staticmethod
     # def __get_db_connection():
@@ -25,12 +26,20 @@ class Server:
     def get_shoes(self):
         try:
             shoe_id = request.args.get('shoe_id')
-            if shoe_id:
-                query = ''' SELECT * from shoes where shoes_id = ?'''
-                params = (shoe_id,)
+            shoe_name = request.args.get('shoe_name')
+            if shoe_id and shoe_name:
+                query = ''' SELECT * from shoes where shoes_id = ? AND shoe_name = ?'''
+                params = (shoe_id,shoe_name,)
+            elif shoe_id:
+                query = ''' SELECT * from shoes where shoes_id = ? '''
+                params = (shoe_id)
+            elif shoe_name:
+                query = ''' SELECT * from shoes where shoe_name = ?'''
+                params = (shoe_name,)
             else:
                 query = ''' SELECT * from shoes '''
                 params = None
+
         except sqlite3.Error as e:
             print(e)
             return e
@@ -63,16 +72,47 @@ class Server:
     def remove_shoe(self):
         try:
             shoe_id = request.args.get('shoe_id')
-            print(shoe_id)
-
-            query = ''' DELETE from shoes where shoes_id = ? '''
-            params = (shoe_id,)
+            shoe_name = request.args.get('shoe_name')
+            if shoe_id and shoe_name:
+                query = ''' DELETE from shoes where shoes_id = ? AND shoe_name = ? '''
+                params = (shoe_id,shoe_name,)
+            elif shoe_id:
+                query = ''' DELETE from shoes where shoes_id = ? '''
+                params = (shoe_id,)
+            else:
+                return jsonify({"message":"shoe_id or shoe_name is required"})
         except sqlite3.Error as e:
             print(e)
             return e
         return database.remove_data(query,params)
 
 
+    def update_shoe(shelf):
+        try:
+            shoe_id = request.args.get('shoe_id')
+            shoe_name = request.args.get('shoe_name')
+            update_data = request.get_json()
+            # Dynamically generate the SET clause from the request data
+            set_clause = ", ".join([f"{key} = ?" for key in update_data.keys()])
+            
+
+            # Prepare the UPDATE query
+            
+            if not update_data:
+                return jsonify({'error': 'No data provided'}), 400
+            
+            if shoe_id and shoe_name:
+                query = f'''UPDATE shoes SET {set_clause} WHERE shoes_id = ? AND shoe_name = ?'''
+                params = list(update_data.values()) + [shoe_id, shoe_name]
+            elif shoe_id:
+                query = f'''UPDATE shoes SET {set_clause} WHERE shoes_id = ?'''
+                params = list(update_data.values()) + [shoe_id]
+            else:
+                return jsonify({"message":"shoe_id or shoe_name is required"})
+            
+        except sqlite3.Error as e:
+            return e
+        return database.update_shoe(query,params)
 
 
     

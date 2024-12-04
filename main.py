@@ -1,5 +1,5 @@
 # This is the entry point for our app.
-from database import create_database, insert_data
+from database import create_database
 from server import Server
 
 # TODO: This method will be moved to a new startup file
